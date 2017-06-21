@@ -67,6 +67,7 @@ Puppet::Type.newtype(:firewall) do
   feature :string_matching, "String matching features"
   feature :queue_num, "Which NFQUEUE to send packets to"
   feature :queue_bypass, "If nothing is listening on queue_num, allow packets to bypass the queue"
+  feature :hmark, "Set packet mark based on a hash of a source/destination IP address of the packet"
 
   # provider specific features
   feature :iptables, "The provider provides iptables features."
@@ -1587,6 +1588,75 @@ Puppet::Type.newtype(:firewall) do
       dst attribute for the module geoip
     EOS
     newvalues(/^[A-Z]{2}(,[A-Z]{2})*$/)
+  end
+
+  newproperty(:hmark_tuple, :array_matching => :all, :required_features => :hmark) do
+    desc <<-EOS
+      Mark packet based on a hash of the packet transport header. Valid
+      options are src, dst, sport and dport. In case you want to match
+      based on the conntrack tuple this packet belongs to and not on the
+      actual wire data, add additional parameter ct.
+    EOS
+    newvalues(:src, :dst, :sport, :dport, :ct)
+
+    def is_to_s(value)
+      should_to_s(value)
+    end
+
+    def should_to_s(value)
+      value = [value] unless value.is_a?(Array)
+      value.join(',')
+    end
+  end
+
+  newproperty(:hmark_mod, :required_features => :hmark) do
+    desc <<-EOS
+      Modulo to use for limiting the actual result of the hash.
+    EOS
+    newvalues(/^[0-9]+$/)
+  end
+
+  newproperty(:hmark_offset, :required_features => :hmark) do
+    desc <<-EOS
+      Increment to add to the result of the modulus to set up a packet mark
+      which does not start at zero.
+    EOS
+    newvalues(/^[0-9]+$/)
+  end
+
+  newproperty(:hmark_src_prefix, :required_features => :hmark) do
+    desc <<-EOS
+      Source prefix to hash on in CDR netmask notation.
+    EOS
+    newvalues(/^[0-9]+$/)
+  end
+
+  newproperty(:hmark_dst_prefix, :required_features => :hmark) do
+    desc <<-EOS
+      Destination prefix to hash on in CDR netmask notation.
+    EOS
+    newvalues(/^[0-9]+$/)
+  end
+
+  newproperty(:hmark_sport_mask, :required_features => :hmark) do
+    desc <<-EOS
+      Source port mask to use, specified as a 16-bit hexadecimal bitmask.
+    EOS
+    newvalues(/^0x[0-9a-f]+$/)
+  end
+
+  newproperty(:hmark_dport_mask, :required_features => :hmark) do
+    desc <<-EOS
+      Destination port mask to use, specified as a 16-bit hexadecimal bitmask.
+    EOS
+    newvalues(/^0x[0-9a-f]+$/)
+  end
+
+  newproperty(:hmark_rnd, :required_features => :hmark) do
+    desc <<-EOS
+      32-bit random value to include in the hash calculation.
+    EOS
+    newvalues(/^0x[0-9a-f]+$/)
   end
 
   autorequire(:firewallchain) do

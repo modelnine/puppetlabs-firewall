@@ -42,6 +42,7 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
   has_feature :string_matching
   has_feature :queue_num
   has_feature :queue_bypass
+  has_feature :hmark
 
   optional_commands({
     :iptables => 'iptables',
@@ -158,6 +159,14 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
     :clusterip_hash_init   => "--hash-init",
     :src_cc                => "--source-country",
     :dst_cc                => "--destination-country",
+    :hmark_tuple           => "--hmark-tuple",
+    :hmark_mod             => "--hmark-mod",
+    :hmark_offset          => "--hmark-offset",
+    :hmark_src_prefix      => "--hmark-src-prefix",
+    :hmark_dst_prefix      => "--hmark-dst-prefix",
+    :hmark_sport_mask      => "--hmark-sport-mask",
+    :hmark_dport_mask      => "--hmark-dport-mask",
+    :hmark_rnd             => "--hmark-rnd",
   }
 
   # These are known booleans that do not take a value, but we want to munge
@@ -291,7 +300,8 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
     :set_mss, :set_dscp, :set_dscp_class, :todest, :tosource, :toports, :to, :checksum_fill, :random, :log_prefix,
     :log_level, :log_uid, :reject, :set_mark, :match_mark, :mss, :connlimit_above, :connlimit_mask, :connmark, :time_start, :time_stop,
     :month_days, :week_days, :date_start, :date_stop, :time_contiguous, :kernel_timezone,
-    :src_cc, :dst_cc, :name]
+    :src_cc, :dst_cc, :name,
+    :hmark_tuple, :hmark_src_prefix, :hmark_dst_prefix, :hmark_sport_mask, :hmark_dport_mask, :hmark_rnd, :hmark_mod, :hmark_offset]
 
   def insert
     debug 'Inserting rule %s' % resource[:name]

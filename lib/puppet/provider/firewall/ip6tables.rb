@@ -34,6 +34,7 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
   has_feature :string_matching
   has_feature :queue_num
   has_feature :queue_bypass
+  has_feature :hmark
 
   optional_commands({
     :ip6tables      => 'ip6tables',
@@ -157,6 +158,14 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
     :kernel_timezone    => "--kerneltz",
     :src_cc             => "--source-country",
     :dst_cc             => "--destination-country",
+    :hmark_tuple        => "--hmark-tuple",
+    :hmark_mod          => "--hmark-mod",
+    :hmark_offset       => "--hmark-offset",
+    :hmark_src_prefix   => "--hmark-src-prefix",
+    :hmark_dst_prefix   => "--hmark-dst-prefix",
+    :hmark_sport_mask   => "--hmark-sport-mask",
+    :hmark_dport_mask   => "--hmark-dport-mask",
+    :hmark_rnd          => "--hmark-rnd",
   }
 
   # These are known booleans that do not take a value, but we want to munge
@@ -246,6 +255,7 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
     :string_from, :string_to, :jump, :clamp_mss_to_pmtu, :gateway, :todest,
     :tosource, :toports, :checksum_fill, :log_level, :log_prefix, :log_uid, :reject, :set_mss, :set_dscp, :set_dscp_class, :mss, :queue_num, :queue_bypass,
     :set_mark, :match_mark, :connlimit_above, :connlimit_mask, :connmark, :time_start, :time_stop, :month_days, :week_days, :date_start, :date_stop, :time_contiguous, :kernel_timezone,
-    :src_cc, :dst_cc, :name]
+    :src_cc, :dst_cc, :name,
+    :hmark_tuple, :hmark_src_prefix, :hmark_dst_prefix, :hmark_sport_mask, :hmark_dport_mask, :hmark_rnd, :hmark_mod, :hmark_offset]
 
 end
